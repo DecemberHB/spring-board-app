@@ -49,3 +49,7 @@ spring:
       password: 1234
       roles: ADMIN
 
+  servlet:
+    multipart:
+      location: upload
+      max-file-size: 10MB

@@ -25,8 +25,7 @@ import java.util.Map;
 @Controller
 public class UserController {
 
-    @Autowired // 직접 주입
-    private TermsService termsService;
+    private final TermsService termsService;
     private final UserService userService;
 
     @GetMapping("/user/info")
@@ -45,42 +44,40 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public String register(UserDTO userDTO, HttpServletRequest req)
-    {
-        String regip = req.getRemoteAddr(); // 사용자 클라이언트 IP 저장
+    public String register(UserDTO userDTO, HttpServletRequest req){
+
+        String regip = req.getRemoteAddr();
         userDTO.setReg_ip(regip);
 
         userService.save(userDTO);
         return "redirect:/user/login";
     }
 
-
-
     @GetMapping("/user/terms")
     public String terms(Model model){
 
-         TermsDTO termsDTO = termsService.getTerms(1);
-         model.addAttribute("termsDTO",termsDTO);
-
+        TermsDTO termsDTO = termsService.getTerms(1);
+        model.addAttribute(termsDTO);
 
         return "user/terms";
     }
 
     // API 요청 메서드
     @ResponseBody
-    @GetMapping("/user/{type}/{value}") //usid만 조회가능하면 나머지도 다 만드렁야하니 역 ㅣ하나에서 해결하기 위함
-    public ResponseEntity<Map<String,Integer>> getUser(@PathVariable("type") String type,
-                                                       @PathVariable("value") String value){
-        log.info("type:{}, value:{}",type,value);
+    @GetMapping("/user/{type}/{value}")
+    public ResponseEntity<Map<String,Integer>> getUserCount(@PathVariable("type") String type,
+                                                            @PathVariable("value") String value){
 
-           int count = userService.conutUser(type, value);
+        log.info("type = {}, value = {}", type, value);
 
+        int count = userService.countUser(type, value);
 
+        // Json 생성
+        Map<String,Integer> map = Map.of("count", count);
 
-       // JSON 생성 (MAP으로)
-        Map<String,Integer> map = Map.of("count",count);
         return ResponseEntity.ok(map);
     }
+
 
 
 }

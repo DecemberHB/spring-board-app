@@ -47,7 +47,7 @@ public class UserService {
     public void modify(){}
     public void remove(){}
 
-    public int conutUser(String type, String value){
+    public int countUser(String type, String value){
 
         int count = 0;
         if(type.equals("usid")){

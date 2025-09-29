@@ -20,7 +20,7 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    @PostMapping("/email/code")
+    @PostMapping("/user/email/code")
     public ResponseEntity<Map<String, Boolean>> verify(@RequestBody Map<String, Object> jsonData){
         String code = (String)jsonData.get("code");
         log.info("code ={}",jsonData.get("code"));
