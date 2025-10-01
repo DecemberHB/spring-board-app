@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'kr.co.sboard'
-version = '0.0.3-SNAPSHOT'
+version = '0.0.4-SNAPSHOT'
 description = 'sboard'
 
 processResources {
@@ -68,3 +68,17 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+// QueryDSL 경로 설정(Q도메인 클래스 생성 경로)
+def querydslDir = "src/main/generated"
+
+sourceSets {
+    main.java.srcDirs querydslDir
+}
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(querydslDir)
+}
+clean {
+    delete file(querydslDir)
+}
+

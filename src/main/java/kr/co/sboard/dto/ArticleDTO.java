@@ -1,5 +1,6 @@
 package kr.co.sboard.dto;
 
+import kr.co.sboard.entity.File;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,10 @@ public class ArticleDTO {
     private String wdate;
 
 
+    public String getWdate() {
+        return wdate.substring(2, 16).replace("1", " ");
+    }
+
     // 업로드 파일 객체
     private MultipartFile file1;
     private MultipartFile file2;
@@ -37,4 +42,9 @@ public class ArticleDTO {
         return List.of(file1, file2);
     }
 
+
+    //추가필드
+    private String nick;
+
+    private List<FileDTO> fileList;
 }

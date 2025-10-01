@@ -3,11 +3,14 @@ package kr.co.sboard.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sboard.dto.ArticleDTO;
 import kr.co.sboard.dto.FileDTO;
+import kr.co.sboard.dto.PageRequestDTO;
+import kr.co.sboard.dto.PageResponseDTO;
 import kr.co.sboard.service.ArticleService;
 import kr.co.sboard.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -22,7 +25,12 @@ public class ArticleController {
     private final FileService fileService;
 
     @GetMapping("/article/list")
-    public String list(){
+    public String list(Model model, PageRequestDTO pageRequestDTO){
+
+        PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
+
+        model.addAttribute(pageResponseDTO);
+
         return "article/list";
     }
 
@@ -31,13 +39,24 @@ public class ArticleController {
         return "article/modify";
     }
 
-    @GetMapping("/article/searchList")
-    public String searchList(){
+    @GetMapping("/article/search")
+    public String searchList(PageRequestDTO pageRequestDTO, Model model){
+
+        log.info("pageRequestDTO = {}", pageRequestDTO);
+
+        PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
+        model.addAttribute(pageResponseDTO);
+
         return "article/searchList";
     }
 
     @GetMapping("/article/view")
-    public String view(){
+    public String view(int ano, Model model){
+        log.info("ano = {}", ano);
+
+       ArticleDTO articleDTO = articleService.getArticle(ano);
+       model.addAttribute("articleDTO", articleDTO);
+
         return "article/view";
     }
 
@@ -51,27 +70,22 @@ public class ArticleController {
 
         String regip = request.getRemoteAddr();
         articleDTO.setReg_ip(regip);
-
         log.info("articleDTO = {}", articleDTO);
 
-
-
-        // 파일업로드
+        // 파일 업로드
         List<FileDTO> fileDTOList = fileService.upload(articleDTO);
 
-        // 글저장
+        // 글 저장
         int fileCnt = fileDTOList.size();
-        articleDTO.setFile_cnt(fileCnt); //위의 리스트의 갯수임
-        articleService.save(articleDTO);
+        articleDTO.setFile_cnt(fileCnt);
+        int ano = articleService.save(articleDTO);
 
         // 파일 저장
         for(FileDTO fileDTO : fileDTOList){
+
+            fileDTO.setAno(ano);
             fileService.save(fileDTO);
-
         }
-
-
-
 
         return "redirect:/article/list";
     }
