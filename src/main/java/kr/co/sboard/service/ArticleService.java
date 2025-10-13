@@ -5,6 +5,7 @@ import kr.co.sboard.dto.ArticleDTO;
 import kr.co.sboard.dto.PageRequestDTO;
 import kr.co.sboard.dto.PageResponseDTO;
 import kr.co.sboard.entity.Article;
+import kr.co.sboard.mapper.ArticleMapper;
 import kr.co.sboard.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.ResourceTransactionManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,8 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ModelMapper modelMapper;
+    private final ArticleMapper articleMapper;
+    //private final ResourceTransactionManager resourceTransactionManager;
 
     public ArticleDTO getArticle(int ano){
 
@@ -33,8 +37,29 @@ public class ArticleService {
         }
         return null;
     }
+
+    public PageResponseDTO selectAricleAll(PageRequestDTO pageRequestDTO) {
+        // MyBatis 처리 템플릿 손 안대기 위해 이전에 해놓은 JPA 로 맞춤
+        List<ArticleDTO> dtoList = articleMapper.selectAll(pageRequestDTO);
+        int total = articleMapper.selectCountTotal(pageRequestDTO);
+        // PageResponseDTO 객체를 변수에 담지 않고 바로 빌드하여 리턴합니다.
+        return PageResponseDTO.builder()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total(total)
+                .build();
+    }
+
+
+    public int selectCountTotal(PageRequestDTO pageRequestDTO) {
+        // MyBatis 처리
+
+        return articleMapper.selectCountTotal(pageRequestDTO);
+    }
+
     public PageResponseDTO getArticleAll(PageRequestDTO pageRequestDTO){
 
+        // JPA  + ~
         //List<Article> list = articleRepository.findAll();
 
         Pageable pageable = pageRequestDTO.getPageable("ano");

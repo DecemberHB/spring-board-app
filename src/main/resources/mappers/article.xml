@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sboard.mapper.ArticleMapper">
+
+    <sql id="searchWhere">
+        <where>
+            <if test="pageRequestDTO.searchType != null and pageRequestDTO.keyword != ''">
+<!--                해당 조건이 맞다면 동적 쿼리 생성-->
+                <choose>
+                    <when test="pageRequestDTO.searchType == 'title'">
+                        AND A.TITLE LIKE '%' || #{pageRequestDTO.keyword} || '%'
+                    </when>
+                    <when test="pageRequestDTO.searchType == 'content'">
+                        AND A.CONTENT LIKE '%' || #{pageRequestDTO.keyword} || '%'
+                    </when>
+                    <when test="pageRequestDTO.searchType == 'writer'">
+                        AND U.NICK LIKE '%' || #{pageRequestDTO.keyword} || '%'
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </sql>
+<!--mybatis는 Entity 사용 XX  OFFSET 10 -> 2PAGE pg 1 = 0  -->
+    <select id="selectAll" resultType="kr.co.sboard.dto.ArticleDTO">
+        SELECT *
+        FROM SB_ARTICLE A
+        JOIN SB_USER U
+        ON A.WRITER = U.USID
+<!--        검색 조건이 없다면 WHERE 절 만나면 안되서 동적 쿼리  -->
+<!--        검색 기능  추가 -->
+        <include refid="searchWhere"/>
+        ORDER BY A.ANO DESC
+        OFFSET #{pageRequestDTO.offset} ROWS
+        FETCH NEXT #{pageRequestDTO.size} ROWS ONLY
+    </select>
+
+    <select id="selectCountTotal" resultType="int">
+        SELECT COUNT(*)
+        FROM SB_ARTICLE A
+        JOIN SB_USER U
+        ON A.WRITER = U.USID
+<!--        검색 글의 전체 갯 수로 필요해서 -->
+        <include refid="searchWhere"/>
+    </select>
+
+
+
+
+</mapper>

@@ -27,11 +27,26 @@ public class ArticleController {
     @GetMapping("/article/list")
     public String list(Model model, PageRequestDTO pageRequestDTO){
 
-        PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
+        // JPA
+        //PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
 
+        // Mybatis
+        PageResponseDTO pageResponseDTO = articleService.selectAricleAll(pageRequestDTO);
         model.addAttribute(pageResponseDTO);
 
         return "article/list";
+    }
+    @GetMapping("/article/search")
+    public String searchList(Model model, PageRequestDTO pageRequestDTO){
+
+        // JPA
+        //PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
+
+        // Mybatis
+        PageResponseDTO pageResponseDTO = articleService.selectAricleAll(pageRequestDTO);
+        model.addAttribute(pageResponseDTO);
+
+        return "article/searchList";
     }
 
     @GetMapping("/article/modify")
@@ -39,16 +54,16 @@ public class ArticleController {
         return "article/modify";
     }
 
-    @GetMapping("/article/search")
-    public String searchList(PageRequestDTO pageRequestDTO, Model model){
-
-        log.info("pageRequestDTO = {}", pageRequestDTO);
-
-        PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
-        model.addAttribute(pageResponseDTO);
-
-        return "article/searchList";
-    }
+//    @GetMapping("/article/search")
+//    public String searchList(PageRequestDTO pageRequestDTO, Model model){
+//
+//        log.info("pageRequestDTO = {}", pageRequestDTO);
+//
+//        PageResponseDTO pageResponseDTO = articleService.getArticleAll(pageRequestDTO);
+//        model.addAttribute(pageResponseDTO);
+//
+//        return "article/searchList";
+//    }
 
     @GetMapping("/article/view")
     public String view(int ano, Model model){

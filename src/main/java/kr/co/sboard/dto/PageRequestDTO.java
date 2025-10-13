@@ -25,6 +25,13 @@ public class PageRequestDTO {
     @Builder.Default
     private String cate = "free";
 
+
+    private int offset;
+
+    public int getOffset() {
+        return (pg -1) * size;
+    }
+
     private String searchType;
     private String keyword;
 
